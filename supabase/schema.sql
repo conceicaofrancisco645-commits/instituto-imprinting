@@ -88,3 +88,26 @@ create trigger leads_limite_envios
 
 create index if not exists leads_email_created_idx on public.leads (email, created_at desc);
 create index if not exists leads_created_idx on public.leads (created_at desc);
+
+-- ============================================================
+-- Aviso por e-mail a cada envio (PRONTO, MAS DESLIGADO)
+-- Cenário no Make: "Instituto Imprinting — aviso de novo lead por e-mail"
+-- (Webhook -> Enviar e-mail). Para ligar: ative o cenário no Make e rode o bloco abaixo.
+-- ============================================================
+-- create extension if not exists pg_net;
+--
+-- create or replace function private.leads_avisar_make()
+-- returns trigger language plpgsql security definer set search_path = '' as $$
+-- begin
+--   perform net.http_post(
+--     url := 'https://hook.us2.make.com/<id-do-webhook>',
+--     body := jsonb_build_object(
+--       'perfil', new.perfil, 'nome', new.nome, 'email', new.email,
+--       'telefone', new.telefone, 'cidade', new.cidade, 'uf', new.uf,
+--       'origem', new.origem, 'created_at', new.created_at)
+--   );
+--   return new;
+-- end; $$;
+--
+-- create trigger leads_avisar_make after insert on public.leads
+--   for each row execute function private.leads_avisar_make();
