@@ -167,8 +167,17 @@
     },
     pac_contato: function () { return val("pac_contato") ? "" : "Escolha como prefere ser contatado."; },
     lgpd: function () { return form.elements.lgpd.checked ? "" : "Para enviar, autorize o uso dos dados para contato."; },
-    saude: function () { return perfil() !== "paciente" || form.elements.saude.checked ? "" : "Para pacientes, esta autorização é obrigatória."; }
+    saude: function () { return perfil() !== "paciente" || form.elements.saude.checked ? "" : "Para pacientes, esta autorização é obrigatória."; },
+    mensagem: function () { return ""; }
   };
+
+  // Os sinais < e > não são aceitos (o banco também recusa): evita código HTML nos dados
+  ["nome", "email", "telefone", "cidade", "pes_inst", "pes_area", "pes_lattes", "med_esp", "med_reg", "mensagem"].forEach(function (name) {
+    var base = rules[name];
+    rules[name] = function () {
+      return /[<>]/.test(val(name)) ? "Remova os sinais < e > deste campo." : base();
+    };
+  });
 
   var fieldsByStep = {
     1: ["perfil"],
@@ -181,7 +190,7 @@
         paciente: ["pac_idade", "pac_contato"]
       }[perfil()] || [];
     },
-    4: ["lgpd", "saude"]
+    4: ["mensagem", "lgpd", "saude"]
   };
   function fieldsOf(n) { var f = fieldsByStep[n]; return typeof f === "function" ? f() : f; }
 
@@ -323,11 +332,19 @@
       },
       body: JSON.stringify(payload())
     }).then(function (res) {
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      done();
-    }).catch(function () {
+      if (res.ok) { done(); return; }
+      return res.json().catch(function () { return {}; }).then(function (body) {
+        var e = new Error("HTTP " + res.status); e.code = body && body.message; throw e;
+      });
+    }).catch(function (err) {
       statusEl.classList.add("is-error");
-      statusEl.textContent = "Não foi possível enviar agora. Verifique sua conexão e tente de novo, ou escreva para contact@institutoimprinting.com.br.";
+      if (err && err.code === "limite_envios_email") {
+        statusEl.textContent = "Este e-mail já enviou 3 manifestações na última hora. Aguarde um pouco ou escreva para contact@institutoimprinting.com.br.";
+      } else if (err && err.code === "limite_envios_geral") {
+        statusEl.textContent = "Recebemos muitos envios agora. Tente de novo em 1 minuto.";
+      } else {
+        statusEl.textContent = "Não foi possível enviar agora. Verifique sua conexão e tente de novo, ou escreva para contact@institutoimprinting.com.br.";
+      }
     }).then(function () {
       btnEnviar.disabled = false; btnEnviar.textContent = "Enviar manifestação";
     });
