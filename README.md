@@ -56,6 +56,9 @@ A chave usada no site é pública, então a proteção está no banco:
 
 - **Row Level Security:** o visitante só pode **inserir**; ninguém consegue ler os dados com a chave do site.
 - **Validação no banco:** formato de e-mail, telefone, tamanhos máximos, perfis permitidos.
+- **Limite de envios:** no máximo 3 por e-mail por hora e 30 por minuto no total, contra robôs.
+- **Colunas protegidas:** o visitante só envia os campos do formulário; ID e data não podem ser forjados.
+- **Sem HTML nos dados:** os sinais `<` e `>` são recusados no site e no banco.
 - **Consentimento obrigatório no banco:** um registro sem consentimento LGPD (ou paciente sem consentimento de saúde) é recusado mesmo que alguém burle o JavaScript.
 
 A estrutura completa está em [`supabase/schema.sql`](supabase/schema.sql).
@@ -73,7 +76,7 @@ A estrutura completa está em [`supabase/schema.sql`](supabase/schema.sql).
 | Lighthouse celular | Performance 97 · Acessibilidade 100 · Boas práticas 96 · SEO 100 |
 | Lighthouse desktop | Performance 100 · Acessibilidade 100 · Boas práticas 96 · SEO 100 |
 | Fluxo dos 4 perfis (Playwright) | Validação, máscara, etapa condicional e envio OK |
-| Segurança do banco | Visitante insere; leitura negada; paciente sem consentimento recusado |
+| Segurança do banco | Visitante insere; leitura, alteração e exclusão negadas; consentimento, limite de envios, ID/data forjados e HTML recusados |
 | Responsivo | 390 px (celular), 820 px (tablet), 1440 px (desktop), sem rolagem horizontal |
 
 ## Como rodar localmente
