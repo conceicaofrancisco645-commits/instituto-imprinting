@@ -2,9 +2,11 @@
 
 Site estático one-page com formulário interativo em etapas para o **Instituto Imprinting**, startup de DeepTech em saúde mental. Projeto prático da **Escola DNC** (Escola Tech).
 
-- **Site publicado:** https://conceicaofrancisco645-commits.github.io/instituto-imprinting/
+- **Site publicado:** https://instituto-imprinting.netlify.app
+- **Espelho:** https://conceicaofrancisco645-commits.github.io/instituto-imprinting/
 - **Repositório:** https://github.com/conceicaofrancisco645-commits/instituto-imprinting
-- **Autor:** Francisco Conceição da Silva Santos
+- **Autor:** Francisco Conceição da Silva Santos (projeto individual, formação Desenvolvedor Front-end)
+- **Demonstração:** [vídeo de 25 s](docs/site-demo.mp4) · [GIF](docs/site-demo.gif)
 
 ## O problema
 
@@ -48,7 +50,7 @@ O pedido da empresa (Voz do Cliente) foi:
 | Front-end | HTML semântico, CSS mobile-first, JavaScript puro (sem framework) |
 | Fontes | Bricolage Grotesque (títulos) e Atkinson Hyperlegible (texto, criada para leitura acessível) |
 | Banco de dados | Supabase (PostgreSQL) via API REST |
-| Hospedagem | GitHub Pages (gratuito, HTTPS); `netlify.toml` pronto caso a empresa prefira Netlify |
+| Hospedagem | Netlify (principal, com os cabeçalhos de segurança do `netlify.toml`) e GitHub Pages (espelho) |
 
 ### Segurança dos dados
 
@@ -62,6 +64,10 @@ A chave usada no site é pública, então a proteção está no banco:
 - **Consentimento obrigatório no banco:** um registro sem consentimento LGPD (ou paciente sem consentimento de saúde) é recusado mesmo que alguém burle o JavaScript.
 
 A estrutura completa está em [`supabase/schema.sql`](supabase/schema.sql).
+
+## Aviso por e-mail (pronto, desligado)
+
+O cenário do Make "Instituto Imprinting — aviso de novo lead por e-mail" recebe cada envio por webhook e manda um e-mail para a equipe. Está desligado porque o plano gratuito do Make permite só 2 cenários ativos. Para ligar: ative o cenário e rode o bloco comentado no fim de `supabase/schema.sql`.
 
 ## Cuidados regulatórios
 
@@ -102,7 +108,8 @@ Para usar outro banco, crie um projeto no Supabase, rode `supabase/schema.sql` e
 │   ├── favicon.svg
 │   └── og.png          # imagem de compartilhamento
 ├── supabase/schema.sql
-└── netlify.toml        # alternativa de publicação no Netlify com cabeçalhos de segurança
+├── docs/               # vídeo e GIF de demonstração
+└── netlify.toml        # publicação no Netlify com cabeçalhos de segurança
 ```
 
 ## Próximos passos sugeridos
